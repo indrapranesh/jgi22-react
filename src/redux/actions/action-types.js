@@ -1,2 +1,6 @@
 export const SET_LOGIN = 'SET_LOGIN';
 export const SET_LOADING = 'SET_LOADING';
+
+export const SET_DOCUSIGN_LOGIN = 'SET_DOCUSIGN_LOGIN'
+export const SET_MEDIAVALET_LOGIN = 'SET_MEDIAVALET_LOGIN'
+export const SET_ESRI_LOGIN = 'SET_ESRI_LOGIN'
