@@ -15,7 +15,9 @@ import {
   TextField,
 } from "@mui/material";
 import { textAlign } from "@mui/system";
+import axios from "axios";
 import React, { useState } from "react";
+import { BACKEND_URL } from "../constants/url.constants";
 
 function Audits() {
   const columns = ["Audit Name", "Created Date", "Status"];
@@ -35,7 +37,12 @@ function Audits() {
      }
 
      const createAudit = () => {
-        console.log(auditForm)
+        const body = auditForm;
+        body['initialVersion'] = auditForm.version;
+        axios.post(`${BACKEND_URL}audits`, body)
+        .then((resp) => {
+          console.log(resp)
+        })
         handleClose();
      }
 

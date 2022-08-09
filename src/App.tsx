@@ -1,14 +1,11 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import './App.scss';
-import { io } from "socket.io-client";
-import Paths from './components/Paths';
 import { useDispatch } from 'react-redux';
 import { setDocusignLogin, setMediavaletLogin } from './redux/actions/integration-actions';
 import { useLocation } from 'react-router-dom';
-import qs from 'qs';
-import axios from 'axios';
-import { BACKEND_URL } from './constants/url.constants';
 import Landing from './components/Landing';
+import axiosApiInstance from './helpers/axios.config';
+import { setCategories } from './redux/actions/mediavalet.actions';
 
 function App() {
 
@@ -22,6 +19,15 @@ function App() {
     if(localStorage.getItem('MEDIAVALET_ACCESS_TOKEN')) {
       dispatch(setMediavaletLogin({mediavalet: true}))
     }
+
+    axiosApiInstance.get(`https://api.mediavalet.com/categories`)
+    .then((res) => {
+      res.data?.payload?.forEach((element: any) => {
+        if(element.tree.path.includes('pranesh-submission') && element?.assetCount > 0) {
+          dispatch(setCategories(element));
+        }
+      });
+    })
   })
 
   return (

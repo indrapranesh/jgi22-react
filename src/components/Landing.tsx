@@ -45,7 +45,9 @@ export default function Landing() {
       const code = qs.parse(search.slice(1))?.code;
       axios.post(`${BACKEND_URL}mvLogin?code=${code}`)
       .then((res) => {
+        console.log(res)
         localStorage.setItem('MEDIAVALET_ACCESS_TOKEN', res.data?.access_token)
+        localStorage.setItem('MEDIAVALET_REFRESH_TOKEN', res.data?.refresh_token)
         history.push('/')
       })
     }
