@@ -2,13 +2,21 @@ import { FormControl, OutlinedInput } from '@mui/material';
 import React, { useState } from 'react';
 import './Login.scss';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { setIsLoggedIn } from '../redux/actions/session-actions';
+import history from '../history';
+import { useDispatch } from 'react-redux';
 
 function Login() {
 
     const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch();
 
     const login = () => {
-        setLoading(true);
+        localStorage.setItem('loggedIn', 'true')
+        dispatch(setIsLoggedIn({
+            isLoggedIn: true
+        }));
+        history.push('/')
     }
   return (
     <div className="Login">

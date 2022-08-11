@@ -2,142 +2,130 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BACKEND_URL } from '../constants/url.constants';
-import Map from '@arcgis/core/Map';
-import MapView from '@arcgis/core/views/MapView';
-import Graphic from '@arcgis/core/Graphic';
-import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
-import Point from '@arcgis/core/geometry/Point';
 import { Trap } from '../interfaces/trap.interface';
-import axiosApiInstance from '../helpers/axios.config';
 import { useSelector } from 'react-redux';
-import { ImageList, ImageListItem } from '@mui/material';
-
+import { Box, Chip, FormControl, InputLabel, MenuItem, Select, Tab, Tabs } from '@mui/material';
+import TabPanel from './TablePanel';
+import AuditDetails from './AuditDetails';
+import { LoadingButton } from '@mui/lab';
+import SendIcon from '@mui/icons-material/Send';
+import Comments from './Comments';
+import CameraTraps from './CameraTraps';
 
 function ViewAudit() {
 
   const params: { audit: string} = useParams();
   const [auditId, setAuditId] = useState('');
-  const [audit, setAudit] = useState({})
+  const [audit, setAudit] = useState({} as any)
   const [traps, setTraps] = useState([]);
   const [trap, setTrap] = useState({} as Trap);
   const [assets, setAssets] = useState([] as Array<any>);
   const [category, setCategory] = useState({} as any)
+  const [value, setValue] = useState(0);
+  const [agreementLoading, setAgreementLoading] = useState(false);
+  const [version, setVersion] = useState({} as any)
+  const [versions, setVersions] = useState([] as Array<any>) 
 
   const _category = useSelector((state: any) => state.categories)
-  
-
-  const map = new Map({
-    basemap: "topo-vector"
-  });
-  
-  const view = new MapView({
-    container: "viewDiv",
-    map: map,
-    zoom: 4
-  });
-
-  
-
- const simpleMarkerSymbol = {
-    type: "simple-marker",
-    color: [226, 119, 40],  // Orange
-    outline: {
-        color: [255, 255, 255], // White
-        width: 1
-    }
- };
-
- const graphicsLayer = new GraphicsLayer();
- map.add(graphicsLayer)
- view.popup.autoOpenEnabled = false;
- view.on("click", function (evt) {
-  traps.forEach((trap: Trap) => {
-    if(Math.floor(parseFloat(trap.latitude)) === Math.floor(evt.mapPoint.latitude) && Math.floor(parseFloat(trap.longitude)) === Math.floor(evt.mapPoint.longitude)) {
-      console.log('opening trap details')
-      view.popup.open({
-        title: `Camera ${trap.camera_id}`,
-        location: evt.mapPoint,
-        content: `
-        <b>Project Name:</b> ${trap.project_name}<br><b>Surveyor Name:</b> ${trap.surveyor_name}<br><b>Setup:</b> ${new Date(trap.setup).toDateString()}<br><b>Camera Procedure:</b> ${trap.cam_procedure}<br><b>Camera attached to:</b> ${trap.cam_attached} <br>
-        <b>Camera make:</b> ${trap.cam_make}<br><b>Camera Feature:</b> ${trap.cam_feature}<br><b>Camera Trap Test:</b> ${trap.cam_trap_test}<br><b>Camera Working:</b> ${trap.cam_working}<br><b>Comments:</b> ${trap.comments}<br>
-        `
-      });
-    }
-  })
-});
-
-
-  const constructPoints = (traps: Array<Trap>) => {
-    traps.forEach((trap: Trap) => {
-      const point = new Point({ //Create a point
-        longitude: parseFloat(trap.longitude),
-        latitude: parseFloat(trap.latitude)
-      });
-      const pointGraphic = new Graphic({
-      geometry: point,
-      symbol: simpleMarkerSymbol
-      });
-      graphicsLayer.add(pointGraphic);
-  })
-}
-
-  constructPoints(traps);
-
   
   useEffect(() => {
     setCategory(_category)
     setAuditId(params.audit);
-    axios.get(`${BACKEND_URL}audits/1`)
+    axios.get(`${BACKEND_URL}audits/${params.audit}`)
     .then((res) => {
       setAuditId(res.data?.id)
       setAudit(res.data)
-    }) 
+    }) ;
+    axios.get(`${BACKEND_URL}versions/${params.audit}`)
+    .then((res) => {
+      setVersions(res.data.versions)
+      setVersion(res.data.latest)
+    })
     axios.get(`${BACKEND_URL}traps`)
     .then((res) => {
       setTraps(res.data)
-      constructPoints(res.data)
-    })
-
-    axiosApiInstance.get(`https://api.mediavalet.com/categories`)
-    .then((res) => {
-      res.data?.payload?.forEach((element: any) => {
-        if(element.tree.path.includes('pranesh-submission') && element?.assetCount > 0) {
-          axiosApiInstance.get(`https://api.mediavalet.com/assets`)
-          .then((res) => {
-            let _assets: Array<any> = [];
-            res.data.payload.assets.forEach((asset: any) => {
-              if((asset.categories as Array<any>).includes(element.id)) {
-                _assets.push(asset)
-              }
-            });
-            console.log(_assets);
-            setAssets(_assets)
-          })
-        }
-      });
     })
   }, [])
 
+  function a11yProps(index: number) {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+  }
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
+  const sendAgreement = () => {
+
+  }
+
+  const handleVersionChange = () => {
+
+  }
+
   return (
     <>
-       <div id="viewDiv" className='w-full' style={{height: '500px'}}></div>
-       <div className='trapImages'>
-        {
-          assets.length > 0 && (
-            <ImageList sx={{ width: '100%', height: 450 }} cols={4} rowHeight={264}>
-            {assets.map((asset, index) => (
-              <ImageListItem key={index}>
-                <img
-                  src={asset.media.medium}
-                  alt={asset.file.title}
-                  loading="lazy"
-                />
-              </ImageListItem>
-            ))}
-          </ImageList>
-          )
-        }
-       </div>
+      <div className='py-5 flex justify-between'>
+        <div className='flex'>
+        <p className='m-0 text-xl font-semibold'>{audit?.name}</p>
+          <div className='active ml-3'>
+            <Chip label="Active" variant="outlined" />
+          </div>
+        </div>
+        <div className='flex items-center'>
+          <div>
+          <FormControl sx={{ m: 1, minWidth: 120 }} fullWidth size='small'>
+            <InputLabel id="demo-simple-select-label">Version</InputLabel>
+            <Select
+            defaultValue={version?.version}
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={version?.version}
+              label="Version"
+              onChange={handleVersionChange}
+            >
+              {
+                versions.map((version, index) => (
+                  <MenuItem key={index} value={version?.version}>{version?.version}</MenuItem>
+                ))
+              }
+            </Select>
+          </FormControl>
+          </div>
+          <div className='ml-5'>
+          <LoadingButton
+                      sx={{width: '35ch'}}
+                      color="primary"
+                      onClick={sendAgreement}
+                      loading={agreementLoading}
+                      loadingPosition="end"
+                      endIcon={<SendIcon />}
+                      variant="contained"
+                      >
+                      Send Final Agreement
+            </LoadingButton>
+          </div>
+        </div>
+      </div>
+      <Box className='pt-3 relative' sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tab label="Audit Details" {...a11yProps(0)} />
+          <Tab label="Camera Traps" {...a11yProps(1)} />
+          <Tab label="Comments" {...a11yProps(2)} />
+        </Tabs>
+      </Box>
+      <TabPanel value={value} index={0}>
+        <AuditDetails  {...{audit, traps}} />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <CameraTraps />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <Comments />
+      </TabPanel>
     </>
   );
 }

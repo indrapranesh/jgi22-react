@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
   Paper,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -22,6 +23,8 @@ import { BACKEND_URL } from "../constants/url.constants";
 function Audits() {
   const columns = ["Audit Name", "Created Date", "Status"];
   const [dialog, setDialog] = useState(false);
+  const [open, setOpen] = useState(false)
+  const [message, setMessage] = useState('')
   const [auditForm, setAuditForm] = useState({
     name: '',
     version: '',
@@ -36,12 +39,24 @@ function Audits() {
         setDialog(false)
      }
 
+     const handleSnackClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+      setOpen(false);
+    };
+
      const createAudit = () => {
         const body = auditForm;
         body['initialVersion'] = auditForm.version;
         axios.post(`${BACKEND_URL}audits`, body)
         .then((resp) => {
-          console.log(resp)
+          console.log(resp);
+          axios.post(`${BACKEND_URL}review/send?auditId=${resp.data.auditId}`, {})
+          .then((res) => {
+            setOpen(true);
+            setMessage('Reviewers are notified')
+          })
         })
         handleClose();
      }
@@ -121,6 +136,12 @@ function Audits() {
           <Button onClick={createAudit}>Create</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+         autoHideDuration={3000}
+        open={open}
+        message={message}
+        onClose={handleSnackClose}
+      />
     </>
   );
 }

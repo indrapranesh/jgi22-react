@@ -22,7 +22,7 @@ axiosApiInstance.interceptors.response.use((response) => {
     }, async function (error) {
     const originalRequest = error.config;
     console.log(error);
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response.status === 401 && !originalRequest._retry && localStorage.getItem('MEDIAVALET_REFRESH_TOKEN') !== null) {
         originalRequest._retry = true;
         const access_token = await refreshAccessToken();            
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;

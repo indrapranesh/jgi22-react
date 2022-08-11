@@ -22,7 +22,8 @@ import { setDocusignLogin } from '../redux/actions/integration-actions';
 import axios from 'axios';
 import { BACKEND_URL } from '../constants/url.constants';
 import history from '../history';
-import Paths from './Paths';
+import Paths, { NoAuthPaths } from './Paths';
+import Review from './Review';
 
 const drawerWidth = 240;
 
@@ -31,6 +32,8 @@ export default function Landing() {
   const { hash, search } = useLocation();
   const dispatch = useDispatch();
   const integrationStatus = useSelector((state: any) => state?.integration)
+  const isLoggedIn = useSelector((state: any) => state?.session?.isLoggedIn);
+  console.log(isLoggedIn)
 
   
 
@@ -74,6 +77,10 @@ export default function Landing() {
     {
       name: 'Audits',
       path: '/audits',
+    },
+    {
+      name: 'Reviewers',
+      path: '/reviewers'
     }
   ]
 
@@ -84,7 +91,9 @@ export default function Landing() {
 
   return (
     <>
-    <Box sx={{ display: 'flex' }}>
+    {
+      isLoggedIn ? (
+        <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -143,6 +152,13 @@ export default function Landing() {
         <Paths/>
       </Box>
     </Box>
+      ) : (
+        <>
+          <NoAuthPaths/>
+          <Review />
+        </>
+      )
+    }
     </>
   );
 }
