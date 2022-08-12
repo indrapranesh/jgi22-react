@@ -23,7 +23,13 @@ import axios from 'axios';
 import { BACKEND_URL } from '../constants/url.constants';
 import history from '../history';
 import Paths, { NoAuthPaths } from './Paths';
-import Review from './Review';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import { IconButton } from '@mui/material';
+import Popover from '@mui/material/Popover';
+import TaskIcon from '@mui/icons-material/Task';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import ShareLocationIcon from '@mui/icons-material/ShareLocation'
 
 const drawerWidth = 240;
 
@@ -33,7 +39,20 @@ export default function Landing() {
   const dispatch = useDispatch();
   const integrationStatus = useSelector((state: any) => state?.integration)
   const isLoggedIn = useSelector((state: any) => state?.session?.isLoggedIn);
-  console.log(isLoggedIn)
+  const notifications = useSelector((state: any) => state?.notifications.notifications.notifications)
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   
 
@@ -57,7 +76,7 @@ export default function Landing() {
   }, [])
 
   
-
+console.log(notifications)
   console.log(window.location.toString())
 
   const integrations = [
@@ -70,15 +89,26 @@ export default function Landing() {
       name: 'MediaValet',
       key: 'mediavalet',
       url: MEDIAVALET_LOGIN_URL
-    }
+    },
+    {
+      name: 'ArcGIS',
+      key: 'esri',
+      url: ''
+    },
   ]
 
   const menu = [
     {
+      icon: <IconButton color='primary'>
+          <TaskIcon />
+      </IconButton>,
       name: 'Audits',
       path: '/audits',
     },
     {
+      icon: <IconButton color='primary'>
+          <PeopleAltIcon />
+      </IconButton>,
       name: 'Reviewers',
       path: '/reviewers'
     }
@@ -99,7 +129,34 @@ export default function Landing() {
         position="fixed"
         sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
       >
-        <Toolbar>
+        <Toolbar style={{background: 'white'}}>
+        <div className='w-full flex justify-end'>
+          <IconButton aria-label="notification" onClick={handleClick}>
+            <NotificationsNoneIcon color='primary' />
+          </IconButton>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+          >
+            <div className=' w-80'>
+              <div className='flex items-center justify-center'>
+                <div className='p-3'>
+                  {
+                      <>
+                      <p className='font-bold '>{notifications?.title}</p>
+                      <p className='font-light text-sm'>{notifications?.message}</p></>
+                  }
+                </div>
+              </div>
+            </div>
+          </Popover>
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -114,14 +171,21 @@ export default function Landing() {
         variant="permanent"
         anchor="left"
       >
-        <Toolbar />
+        <Toolbar>
+          <div className='w-full flex items-center'>
+            <ShareLocationIcon color="primary" fontSize='large' />
+          <p className='title-logo font-bold text-2xl text-center w-full' onClick={() => history.push('/')}>GeoTagger</p>
+          </div>
+          
+        </Toolbar>
+        
         <Divider />
         <List>
           {menu.map((item, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  
+                  {item?.icon}
                 </ListItemIcon>
                 <ListItemText onClick={() => history.push(item.path)} primary={item.name} />
               </ListItemButton>
@@ -130,13 +194,14 @@ export default function Landing() {
         </List>
         <Divider />
         <List>
+          <p className='font-sans uppercase font-bold text-normal py-3 text-center text-stone-500'>Integrations</p>
           {integrations.map((item, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton onClick={() => openLogin(item)}>
                 <ListItemText primary={item.name} />
                 <ListItemIcon>
                   {
-                    integrationStatus[`${item.key}`] ? (<></>) : (<WarningIcon />)
+                    integrationStatus[`${item.key}`] ? (<><VerifiedIcon color='primary' /></>) : (<WarningIcon color='warning' />)
                   }
                 </ListItemIcon>
               </ListItemButton>
@@ -148,14 +213,14 @@ export default function Landing() {
         component="main"
         sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
       >
-        <Toolbar />
+        <Toolbar>
+        </Toolbar>
         <Paths/>
       </Box>
     </Box>
       ) : (
         <>
           <NoAuthPaths/>
-          <Review />
         </>
       )
     }

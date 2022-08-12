@@ -1,0 +1,58 @@
+{
+    "traps": [
+      {
+        "id": 1,
+        "project_name": "Test",
+        "surveyor_name": "test",
+        "camera_id": 1,
+        "setup": "2022-04-12T06:03:00.000Z",
+        "latitude": "5.5009679581391415",
+        "longitude": "-1.2621367645554713",
+        "cam_procedure": "Changing batteries and/or memor",
+        "cam_attached": "Tree",
+        "cam_height": 100,
+        "area_name": "Assin south",
+        "cam_make": "Browning",
+        "cam_feature": "Wildlife trail",
+        "cam_trap_test": true,
+        "cam_working": true,
+        "comments": "",
+        "reviewed": false,
+        "createdAt": "2022-08-06T06:04:55.000Z",
+        "updatedAt": "2022-08-06T06:04:55.000Z"
+      },
+      {
+        "id": 3,
+        "project_name": "Geotagger",
+        "surveyor_name": "Pranesh",
+        "camera_id": 2,
+        "setup": "2022-08-12T10:28:00.000Z",
+        "latitude": "6.650739608164359",
+        "longitude": "-1.733785351727113",
+        "cam_procedure": "Changing batteries and/or memor",
+        "cam_attached": "Tree",
+        "cam_height": 150,
+        "area_name": "Twedie",
+        "cam_make": "Bushnell",
+        "cam_feature": "Wildlife trail",
+        "cam_trap_test": true,
+        "cam_working": true,
+        "comments": "Cam was installed near a pathway",
+        "reviewed": false,
+        "createdAt": "2022-08-12T10:30:07.000Z",
+        "updatedAt": "2022-08-12T10:30:07.000Z"
+      }
+    ],
+    "audit": {
+        "id": 2,
+        "name": "August audit",
+        "description": "Traps added for the past two weeks are added to the audit. Traps were added using the Survey123 when the memory cards are replaced. All the images were uploaded to Azure cloud using the Mediavalet. Please find attached the images belonging to each traps and give your comments based on the location on the comments section.",
+        "initialVersion": "1.0.0",
+        "finalVersion": null,
+        "isCompleted": null,
+        "finalReview": null,
+        "mapUrl": null,
+        "createdAt": "2022-08-12T10:55:00.000Z",
+        "updatedAt": "2022-08-12T10:55:00.000Z"
+      }
+  }

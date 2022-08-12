@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { BACKEND_URL } from '../constants/url.constants';
 
 const axiosApiInstance = axios.create()
@@ -10,6 +10,10 @@ axiosApiInstance.interceptors.request.use(
             const token = localStorage.getItem('MEDIAVALET_ACCESS_TOKEN');
             config.headers['Authorization'] = 'Bearer ' + token;
             config.headers['Ocp-Apim-Subscription-Key'] = process.env.REACT_APP_MEDIAVALET_SUBSCRIPTION_KEY
+        }
+        if(config.url?.includes('Envelope')) {
+            const token = localStorage.getItem('DOCUSIGN_ACCESS_TOKEN');
+            config.headers['Authorization'] = 'Bearer ' + token;
         }
         return config;
     },

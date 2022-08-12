@@ -3,7 +3,7 @@ import { SET_DOCUSIGN_LOGIN, SET_ESRI_LOGIN, SET_MEDIAVALET_LOGIN } from "../act
 
 const initialState = {
 	docusign: false,
-    esri: false,
+    esri: true,
     mediavalet: false
 };
 

@@ -5,13 +5,22 @@ import { setDocusignLogin, setMediavaletLogin } from './redux/actions/integratio
 import { useLocation } from 'react-router-dom';
 import Landing from './components/Landing';
 import { setIsLoggedIn } from './redux/actions/session-actions';
+import socketIOClient from "socket.io-client";
+import { setNotifications } from './redux/actions/mediavalet.actions';
+import notifications from './redux/reducers/notifications.reducer';
 
 function App() {
 
   const dispatch = useDispatch()
   const { search } = useLocation();
+  const socket = socketIOClient('http://localhost:3080')
   
   useEffect(() => {
+    socket.on('response', (data) => {
+      if(data?.title) {
+        dispatch(setNotifications({notifications: data}));
+      }
+    });
     if(localStorage.getItem('DOCUSIGN_ACCESS_TOKEN')) {
       dispatch(setDocusignLogin({docusign: true}))
     }

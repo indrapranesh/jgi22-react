@@ -1,11 +1,11 @@
-import { SET_CATEGORIES } from "./action-types"
+import { SET_NOTIFICATIONS } from "./action-types"
 
-export const setCategories = (data) => {
+export const setNotifications = (data) => {
     console.log(data)
     return ({
-        type: SET_CATEGORIES,
+        type: SET_NOTIFICATIONS,
         payload: {
-            category: data
+            notifications: data
         }
     })
 }

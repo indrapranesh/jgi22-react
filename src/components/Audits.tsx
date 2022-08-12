@@ -19,6 +19,7 @@ import { textAlign } from "@mui/system";
 import axios from "axios";
 import React, { useState } from "react";
 import { BACKEND_URL } from "../constants/url.constants";
+import history from "../history";
 
 function Audits() {
   const columns = ["Audit Name", "Created Date", "Status"];
@@ -28,7 +29,7 @@ function Audits() {
   const [auditForm, setAuditForm] = useState({
     name: '',
     version: '',
-    mapUrl: ''
+    description: ''
   })
 
      const handleOpen = () => {
@@ -52,11 +53,12 @@ function Audits() {
         axios.post(`${BACKEND_URL}audits`, body)
         .then((resp) => {
           console.log(resp);
-          axios.post(`${BACKEND_URL}review/send?auditId=${resp.data.auditId}`, {})
+          axios.post(`${BACKEND_URL}review/send?auditId=${resp.data.id}`, {})
           .then((res) => {
             setOpen(true);
             setMessage('Reviewers are notified')
-          })
+          });
+          history.push(`/audits/${resp.data.id}`);
         })
         handleClose();
      }
@@ -109,6 +111,17 @@ function Audits() {
             />
             <TextField
                 margin="dense"
+                id="name"
+                label="Description"
+                type="text"
+                fullWidth
+                variant="standard"
+                required
+                value={auditForm.description}
+                onChange={(e) => setAuditForm({...auditForm, description: e.target.value})}
+            />
+            <TextField
+                margin="dense"
                 id="version"
                 label="Version"
                 type="text"
@@ -117,17 +130,6 @@ function Audits() {
                 required
                 value={auditForm.version}
                 onChange={(e) => setAuditForm({...auditForm, version: e.target.value})}
-            />
-            <TextField
-                margin="dense"
-                id="mapUrl"
-                label="Map URL"
-                type="text"
-                fullWidth
-                variant="standard"
-                required
-                value={auditForm.mapUrl}
-                onChange={(e) => setAuditForm({...auditForm, mapUrl: e.target.value})}
             />
             </div>
         </DialogContent>
